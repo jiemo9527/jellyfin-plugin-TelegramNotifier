@@ -1,5 +1,62 @@
 # Jellyfin Plugin Telegram Notifier
 
+## Fork patch: ItemUpdated notifications / 本 fork 补丁说明
+
+This fork branch adds dedicated Jellyfin media refresh/update notifications. Use branch `notify-item-updated` from `https://github.com/jiemo9527/jellyfin-plugin-TelegramNotifier`.
+
+本 fork 分支新增了独立的媒体刷新/更新通知。请使用 `jiemo9527/jellyfin-plugin-TelegramNotifier` 的 `notify-item-updated` 分支。
+
+### What is fixed / 已修复功能
+
+- Adds independent `ItemUpdated / 媒体刷新（更新）` notifications.
+- Adds separate `ItemUpdated` switches, subtype switches, and templates for Movies, Series, Seasons, Episodes, Albums, Songs, and Books.
+- Uses default Chinese update text like `{item.Name} 已刷（更）新`.
+- Prevents parent TV refresh spam: refreshing Series only sends Series, refreshing Season only sends Season, and Episode notifications are sent only when the Episode itself is updated.
+- Suppresses `ItemUpdated` for the same item if `ItemAdded` was sent successfully within the previous 5 minutes.
+- Falls back to a text message if sending a photo fails.
+- Normalizes `ServerUrl` so image URLs work whether `http://` or `https://` is included or not.
+- Makes the configuration UI cleaner by hiding disabled/non-primary notification types by default.
+- Adds Chinese labels beside the existing UI text.
+
+### Install this fork build / 安装此 fork 版本
+
+1. Install the original `Telegram Notifier 12.2.0.0` plugin in Jellyfin first, then stop Jellyfin.
+
+```bash
+docker stop jellyfin
+```
+
+2. Build this fork branch with the .NET 9 SDK container.
+
+```bash
+git clone -b notify-item-updated https://github.com/jiemo9527/jellyfin-plugin-TelegramNotifier.git
+docker run --rm -v "$PWD/jellyfin-plugin-TelegramNotifier:/src" -w /src mcr.microsoft.com/dotnet/sdk:9.0 dotnet build -c Release
+```
+
+3. Replace the installed plugin DLL.
+
+```bash
+cp jellyfin-plugin-TelegramNotifier/Jellyfin.Plugin.TelegramNotifier/bin/Release/net9.0/Jellyfin.Plugin.TelegramNotifier.dll "/srv/jellyfin/config/plugins/Telegram Notifier_12.2.0.0/Jellyfin.Plugin.TelegramNotifier.dll"
+```
+
+4. Start Jellyfin again.
+
+```bash
+docker start jellyfin
+```
+
+5. Open the Telegram Notifier settings in Jellyfin and enable `Item Updated / 媒体刷新（更新）` plus the needed subtypes.
+
+### Reproduce the original issue / 原版问题复现
+
+1. Install the original `Telegram Notifier 12.2.0.0` on Jellyfin `10.11.x`.
+2. Configure a valid Telegram bot and enable `Item Added` notifications.
+3. Add a movie or episode and wait for the Telegram Notifier scheduled task.
+4. If the item primary image is not ready or returns `404`, the original plugin may fail the notification because it only tries `sendPhoto`.
+5. Refresh metadata for an existing movie, series, season, or episode.
+6. The original plugin does not send a refresh/update notification because it only subscribes to `ItemAdded`, not `ItemUpdated`.
+7. If add and update events happen close together, a naive update implementation can produce duplicate/noisy notifications; this fork suppresses update notifications for 5 minutes after a successful add for the same item.
+
 <a href='https://ko-fi.com/B0B8112Y0Y' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/RomainPierre7/jellyfin-plugin-TelegramNotifier/total)
