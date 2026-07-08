@@ -8,12 +8,28 @@ public class PluginConfiguration : BasePluginConfiguration
     public PluginConfiguration()
     {
         ServerUrl = "localhost:8096";
+        ServerDisplayUrl = string.Empty;
+        ProxyHost = string.Empty;
+        ProxyUsername = string.Empty;
+        ProxyPassword = string.Empty;
         EnablePlugin = true;
         EmptyPlaceholderReplacement = "...";
         UserConfigurations = Array.Empty<UserConfiguration>();
     }
 
+    public bool ProxyEnabled { get; set; }
+
+    public string ProxyHost { get; set; }
+
+    public int ProxyPort { get; set; }
+
+    public string ProxyUsername { get; set; }
+
+    public string ProxyPassword { get; set; }
+
     public string ServerUrl { get; set; }
+
+    public string ServerDisplayUrl { get; set; }
 
     public bool EnablePlugin { get; set; }
 

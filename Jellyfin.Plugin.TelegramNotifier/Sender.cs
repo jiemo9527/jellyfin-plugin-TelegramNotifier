@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,43 @@ namespace Jellyfin.Plugin.TelegramNotifier
 
         public Sender()
         {
-            _httpClient = new HttpClient();
             _logger = Plugin.Logger;
+            var handler = new HttpClientHandler
+            {
+                CheckCertificateRevocationList = true
+            };
+            var config = Plugin.Instance?.Configuration;
+
+            if (config?.ProxyEnabled == true && !string.IsNullOrEmpty(config.ProxyHost))
+            {
+                var proxy = new WebProxy(
+                    config.ProxyHost,
+                    config.ProxyPort);
+
+                if (!string.IsNullOrEmpty(config.ProxyUsername))
+                {
+                    proxy.Credentials = new NetworkCredential(
+                        config.ProxyUsername,
+                        config.ProxyPassword);
+
+                    _logger.LogInformation(
+                        "TelegramNotifier: Using HTTP proxy {ProxyHost}:{ProxyPort} with authentication.",
+                        config.ProxyHost,
+                        config.ProxyPort);
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        "TelegramNotifier: Using HTTP proxy {ProxyHost}:{ProxyPort} without authentication.",
+                        config.ProxyHost,
+                        config.ProxyPort);
+                }
+
+                handler.Proxy = proxy;
+                handler.UseProxy = true;
+            }
+
+            _httpClient = new HttpClient(handler);
         }
 
         public void Dispose()

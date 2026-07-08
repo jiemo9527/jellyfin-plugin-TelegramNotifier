@@ -6,6 +6,10 @@ This fork branch adds dedicated Jellyfin media refresh/update notifications. Use
 
 本 fork 分支新增了独立的媒体刷新/更新通知。请使用 `jiemo9527/jellyfin-plugin-TelegramNotifier` 的 `notify-item-updated` 分支。
 
+This branch is based on upstream `12.3.0.0`, including `ServerDisplayUrl` and HTTP proxy configuration.
+
+本分支已合并上游 `12.3.0.0`，包含 `ServerDisplayUrl / 展示用服务器地址` 和 HTTP 代理配置。
+
 ### What is fixed / 已修复功能
 
 - Adds independent `ItemUpdated / 媒体刷新（更新）` notifications.
@@ -15,12 +19,13 @@ This fork branch adds dedicated Jellyfin media refresh/update notifications. Use
 - Suppresses `ItemUpdated` for the same item if `ItemAdded` was sent successfully within the previous 5 minutes.
 - Falls back to a text message if sending a photo fails.
 - Normalizes `ServerUrl` so image URLs work whether `http://` or `https://` is included or not.
+- Keeps upstream `ServerDisplayUrl` and HTTP proxy support from `12.3.0.0`.
 - Makes the configuration UI cleaner by hiding disabled/non-primary notification types by default.
 - Adds Chinese labels beside the existing UI text.
 
 ### Install this fork build / 安装此 fork 版本
 
-1. Install the original `Telegram Notifier 12.2.0.0` plugin in Jellyfin first, then stop Jellyfin.
+1. Install or update the original `Telegram Notifier 12.3.0.0` plugin in Jellyfin first, then stop Jellyfin.
 
 ```bash
 docker stop jellyfin
@@ -36,7 +41,7 @@ docker run --rm -v "$PWD/jellyfin-plugin-TelegramNotifier:/src" -w /src mcr.micr
 3. Replace the installed plugin DLL.
 
 ```bash
-cp jellyfin-plugin-TelegramNotifier/Jellyfin.Plugin.TelegramNotifier/bin/Release/net9.0/Jellyfin.Plugin.TelegramNotifier.dll "/srv/jellyfin/config/plugins/Telegram Notifier_12.2.0.0/Jellyfin.Plugin.TelegramNotifier.dll"
+cp jellyfin-plugin-TelegramNotifier/Jellyfin.Plugin.TelegramNotifier/bin/Release/net9.0/Jellyfin.Plugin.TelegramNotifier.dll "/srv/jellyfin/config/plugins/Telegram Notifier_12.3.0.0/Jellyfin.Plugin.TelegramNotifier.dll"
 ```
 
 4. Start Jellyfin again.
@@ -49,7 +54,7 @@ docker start jellyfin
 
 ### Reproduce the original issue / 原版问题复现
 
-1. Install the original `Telegram Notifier 12.2.0.0` on Jellyfin `10.11.x`.
+1. Install the original `Telegram Notifier 12.2.0.0` or `12.3.0.0` on Jellyfin `10.11.x`.
 2. Configure a valid Telegram bot and enable `Item Added` notifications.
 3. Add a movie or episode and wait for the Telegram Notifier scheduled task.
 4. If the item primary image is not ready or returns `404`, the original plugin may fail the notification because it only tries `sendPhoto`.
