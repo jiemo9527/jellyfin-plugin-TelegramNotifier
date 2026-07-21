@@ -25,20 +25,6 @@ This branch is based on upstream `12.3.0.0`, including `ServerDisplayUrl` and HT
 
 ### Install this fork build / 安装此 fork 版本
 
-Repository URL for the patched `12.3.0.0` release:
-
-补丁版 `12.3.0.0` 的 Jellyfin 插件仓库地址：
-
-```text
-https://raw.githubusercontent.com/jiemo9527/jellyfin-plugin-TelegramNotifier/notify-item-updated/manifest.json
-```
-
-The release package is hosted in this fork at tag `12.3.0.0-patched`, while the plugin assembly version remains `12.3.0.0`.
-
-发布包托管在本 fork 的 `12.3.0.0-patched` tag 下，插件程序集版本仍保持 `12.3.0.0`。
-
-Manual install / 手动安装：
-
 1. Install or update the original `Telegram Notifier 12.3.0.0` plugin in Jellyfin first, then stop Jellyfin.
 
 ```bash
